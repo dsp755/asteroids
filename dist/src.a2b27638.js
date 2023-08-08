@@ -175,7 +175,7 @@ function moveWithMouse(event) {
       gamePaused = false;
       start = setInterval(createObstacle, 40);
     }
-    spaceShip.style.transform = "translate(" + x + "px, " + y + "px)";
+    spaceShip.style.transform = "translate(".concat(x, "px, ").concat(y, "px)");
   } else {
     if (!gamePaused) {
       gamePaused = true;
@@ -232,7 +232,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39807" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37429" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

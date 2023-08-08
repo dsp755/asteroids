@@ -69,7 +69,7 @@ function moveWithMouse(event) {
       gamePaused = false;
       start = setInterval(createObstacle, 40);
     }
-    spaceShip.style.transform = "translate(" + x + "px, " + y + "px)";
+    spaceShip.style.transform = `translate(${x}px, ${y}px)`;
   } else {
     if (!gamePaused) {
       gamePaused = true;
