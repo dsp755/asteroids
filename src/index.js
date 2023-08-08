@@ -3,6 +3,7 @@ let gameOver = false;
 let gamePaused = false;
 let spaceShip = document.getElementById("spaceShip");
 const obstaclesArray = [];
+
 const restartGame = () => {
   score = 0;
   document.body.innerHTML =
@@ -23,12 +24,11 @@ const createObstacle = () => {
   if (!gamePaused) {
     const obstacle = document.createElement("div");
     obstacle.classList.add("obstacle");
-    obstacle.style["margin-top"] = `${Math.random() * window.innerHeight}px`;
+    obstacle.style.top = `${Math.random() * window.innerHeight}px`;
     obstacle.style.left = window.innerWidth + "px";
     document.body.appendChild(obstacle);
     obstaclesArray.push(obstacle);
 
-    score += 1;
     document.getElementById("score").innerText = `SCORE: ${score}`;
 
     let obstaclePos = window.innerWidth;
@@ -41,6 +41,7 @@ const createObstacle = () => {
         if (obstacle.getBoundingClientRect().left <= 0) {
           obstacle.remove();
           obstaclesArray.shift();
+          score += 1;
           return;
         }
       }
@@ -69,7 +70,7 @@ function moveWithMouse(event) {
       gamePaused = false;
       start = setInterval(createObstacle, 40);
     }
-    spaceShip.style.transform = "translate(" + x + "px, " + y + "px)";
+    spaceShip.style.transform = `translate(${x}px, ${y}px)`;
   } else {
     if (!gamePaused) {
       gamePaused = true;
@@ -102,8 +103,13 @@ const checkCollision = () => {
 };
 
 document.addEventListener("mousemove", moveWithMouse);
-document.addEventListener("mousemove", checkCollision);
-document.addEventListener("keydown", checkCollision);
+
+function runOnEachFrame() {
+  checkCollision();
+  requestAnimationFrame(runOnEachFrame);
+}
+
+runOnEachFrame();
 
 function checkPosition(elem) {
   return {
