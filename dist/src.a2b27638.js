@@ -155,12 +155,16 @@ var createObstacle = function createObstacle() {
   if (!state.gamePaused) {
     var obstacle = document.createElement("div");
     obstacle.classList.add("obstacle");
-    obstacle.style["margin-top"] = "".concat(Math.random() * window.innerHeight, "px");
+    obstacle.style.top = "".concat(Math.random() * window.innerHeight, "px");
     obstacle.style.left = window.innerWidth + "px";
     document.body.appendChild(obstacle);
     obstaclesArray.push(obstacle);
+<<<<<<< HEAD
     state.score += 1;
     document.getElementById("score").innerText = "SCORE: ".concat(state.score);
+=======
+    document.getElementById("score").innerText = "SCORE: ".concat(score);
+>>>>>>> refactoring
     var obstaclePos = window.innerWidth;
     var moveObstacle = function moveObstacle() {
       if (!state.gamePaused) {
@@ -169,6 +173,7 @@ var createObstacle = function createObstacle() {
         if (obstacle.getBoundingClientRect().left <= 0) {
           obstacle.remove();
           obstaclesArray.shift();
+          score += 1;
           return;
         }
       }
@@ -212,8 +217,11 @@ var checkCollision = function checkCollision() {
   }
 };
 document.addEventListener("mousemove", moveWithMouse);
-document.addEventListener("mousemove", checkCollision);
-document.addEventListener("keydown", checkCollision);
+function runOnEachFrame() {
+  checkCollision();
+  requestAnimationFrame(runOnEachFrame);
+}
+runOnEachFrame();
 function checkPosition(elem) {
   return {
     left: Math.round(elem.getBoundingClientRect().left + 15),
@@ -245,7 +253,11 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+<<<<<<< HEAD
   var ws = new WebSocket(protocol + '://' + hostname + ':' + "43257" + '/');
+=======
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36571" + '/');
+>>>>>>> refactoring
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
