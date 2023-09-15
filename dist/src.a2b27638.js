@@ -118,107 +118,92 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"src/index.js":[function(require,module,exports) {
-function _readOnlyError(name) { throw new TypeError("\"" + name + "\" is read-only"); }
 var score = 0;
-var gameOver;
-var gamePaused;
+var gameOver = false;
+var gamePaused = false;
 var spaceShip = document.getElementById("spaceShip");
 var obstaclesArray = [];
+document.body.style.cursor = "none"; // Hide the cursor
+
 var restartGame = function restartGame() {
   gameOver = false;
   gamePaused = false;
   score = 0;
   document.body.innerHTML = "<div id='score' class='score'>SCORE: 0</div><div id='spaceShip' class='spaceShip' />";
-  start = setInterval(createObstacle, 40);
   spaceShip = document.getElementById("spaceShip");
-
-  // Get the center coordinates of the screen
   var centerX = window.innerWidth / 2;
   var centerY = window.innerHeight / 2;
-
-  // Set the spaceShip's transform property to center it on the screen
   spaceShip.style.transform = "translate(".concat(centerX, "px, ").concat(centerY, "px)");
-  moveWithKeyboard(spaceShip, 30);
 };
 var createObstacle = function createObstacle() {
-  if (!gamePaused) {
+  if (!gamePaused && !gameOver) {
     var obstacle = document.createElement("div");
     obstacle.classList.add("obstacle");
     obstacle.style.top = "".concat(Math.random() * window.innerHeight, "px");
-    obstacle.style.left = window.innerWidth + "px";
+    obstacle.style.right = "0px";
     document.body.appendChild(obstacle);
     obstaclesArray.push(obstacle);
+    moveObstacle(obstacle, window.innerWidth - 30);
+  }
+};
+var moveObstacle = function moveObstacle(obstacle, obstaclePos) {
+  if (gameOver) {
+    return;
+  }
+  if (!gamePaused) {
+    obstaclePos -= 8;
+    obstacle.style.left = "".concat(obstaclePos, "px");
+  }
+  if (obstacle.getBoundingClientRect().right <= 30) {
+    obstacle.remove();
+    obstaclesArray = obstaclesArray.filter(function (item) {
+      return item !== obstacle;
+    });
+    score++;
     document.getElementById("score").innerText = "SCORE: ".concat(score);
-    var obstaclePos = window.innerWidth;
-    var moveObstacle = function moveObstacle(gamePaused, gameOver) {
-      if (!gamePaused && !gameOver) {
-        obstaclePos -= 8;
-        obstacle.style.transform = "translateX(".concat(obstaclePos, "px)");
-        if (obstacle.getBoundingClientRect().left <= 0) {
-          obstacle.remove();
-          obstaclesArray.shift();
-          score += 1;
-          return;
-        }
-      }
-      requestAnimationFrame(function () {
-        return moveObstacle(gamePaused, gameOver);
-      });
-    };
+  } else {
     requestAnimationFrame(function () {
-      return moveObstacle(gamePaused, gameOver);
+      return moveObstacle(obstacle, obstaclePos);
     });
   }
 };
-var start = setInterval(createObstacle, 40);
-function moveWithMouse(event) {
+var checkCollision = function checkCollision() {
+  var circlePosition = checkPosition(spaceShip);
+  obstaclesArray.forEach(function (el) {
+    if (circlePosition.left >= checkPosition(el).left - 20 && circlePosition.left <= checkPosition(el).left + 20 && circlePosition.right >= checkPosition(el).right - 20 && circlePosition.right <= checkPosition(el).right + 20) {
+      gameOver = true;
+      document.body.innerHTML = "<div id='score' class='score'>SCORE: \n      ".concat(score, "</div><div class=\"game-over\">GAME OVER<div id=\"restart\" class=\"restart\">RESTART</div></div>");
+      obstaclesArray = [];
+      var restartButton = document.getElementById("restart");
+      restartButton.addEventListener("click", restartGame);
+    }
+  });
+};
+document.addEventListener("mousemove", function (event) {
   var x = event.clientX;
   var y = event.clientY;
   var margin = 20;
-
-  // Check if the cursor is within the playing area with the margin
   if (x > margin && y > margin && x < window.innerWidth - margin && y < window.innerHeight - margin) {
-    if (gamePaused) {
-      gamePaused = false;
-      start = setInterval(createObstacle, 40);
-    }
+    gamePaused = false;
     spaceShip.style.transform = "translate(".concat(x, "px, ").concat(y, "px)");
   } else {
-    if (!gamePaused) {
-      gamePaused = true;
-      clearInterval(start);
-    }
+    gamePaused = true;
+    document.body.style.cursor = "default"; // Show the cursor
   }
-}
-var checkCollision = function checkCollision() {
-  if (!gamePaused) {
-    var circlePosition = checkPosition(spaceShip);
-    obstaclesArray.forEach(function (el) {
-      if (circlePosition.left >= checkPosition(el).left - 20 && circlePosition.left <= checkPosition(el).left + 20 && circlePosition.right >= checkPosition(el).right - 20 && circlePosition.right <= checkPosition(el).right + 20) {
-        document.body.innerHTML = "<div id='score' class='score'>SCORE: \n      ".concat(score, "</div><div class=\"game-over\">GAME OVER<div id=\"restart\" class=\"restart\">RESTART</div></div>");
-        clearInterval(start);
-        gameOver = true;
-        [], _readOnlyError("obstaclesArray");
-        document.getElementById("restart").addEventListener("click", function () {
-          restartGame();
-          document.body.requestFullscreen();
-        });
-      }
-    });
-  }
-};
-document.addEventListener("mousemove", moveWithMouse);
-function runOnEachFrame() {
+});
+
+var runCollisionCheck = function runCollisionCheck() {
   checkCollision();
-  requestAnimationFrame(runOnEachFrame);
-}
-runOnEachFrame();
+  requestAnimationFrame(runCollisionCheck);
+};
+runCollisionCheck();
 function checkPosition(elem) {
   return {
     left: Math.round(elem.getBoundingClientRect().left + 15),
     right: Math.round(elem.getBoundingClientRect().top + 15)
   };
 }
+setInterval(createObstacle, 100);
 },{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';

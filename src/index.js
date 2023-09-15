@@ -1,8 +1,9 @@
-var score = 0;
-let gameOver;
-let gamePaused;
+let score = 0;
+let gameOver = false;
+let gamePaused = false;
 let spaceShip = document.getElementById("spaceShip");
-const obstaclesArray = [];
+let obstaclesArray = [];
+document.body.style.cursor = "none"; // Hide the cursor
 
 const restartGame = () => {
   gameOver = false;
@@ -10,110 +11,91 @@ const restartGame = () => {
   score = 0;
   document.body.innerHTML =
     "<div id='score' class='score'>SCORE: 0</div><div id='spaceShip' class='spaceShip' />";
-  start = setInterval(createObstacle, 40);
   spaceShip = document.getElementById("spaceShip");
 
-  // Get the center coordinates of the screen
   const centerX = window.innerWidth / 2;
   const centerY = window.innerHeight / 2;
 
-  // Set the spaceShip's transform property to center it on the screen
   spaceShip.style.transform = `translate(${centerX}px, ${centerY}px)`;
-  moveWithKeyboard(spaceShip, 30);
 };
 
 const createObstacle = () => {
-  if (!gamePaused) {
+  if (!gamePaused && !gameOver) {
     const obstacle = document.createElement("div");
     obstacle.classList.add("obstacle");
     obstacle.style.top = `${Math.random() * window.innerHeight}px`;
-    obstacle.style.left = window.innerWidth + "px";
+    obstacle.style.right = `0px`;
     document.body.appendChild(obstacle);
     obstaclesArray.push(obstacle);
 
-    document.getElementById("score").innerText = `SCORE: ${score}`;
-
-    let obstaclePos = window.innerWidth;
-
-    const moveObstacle = (gamePaused, gameOver) => {
-      if (!gamePaused && !gameOver) {
-        obstaclePos -= 8;
-        obstacle.style.transform = `translateX(${obstaclePos}px)`;
-
-        if (obstacle.getBoundingClientRect().left <= 0) {
-          obstacle.remove();
-          obstaclesArray.shift();
-          score += 1;
-          return;
-        }
-      }
-      requestAnimationFrame(() => moveObstacle(gamePaused, gameOver));
-    };
-
-    requestAnimationFrame(() => moveObstacle(gamePaused, gameOver));
+    moveObstacle(obstacle, window.innerWidth - 30);
   }
 };
 
-let start = setInterval(createObstacle, 40);
+const moveObstacle = (obstacle, obstaclePos) => {
+  if (gameOver) {
+    return;
+  }
 
-function moveWithMouse(event) {
-  var x = event.clientX;
-  var y = event.clientY;
-  var margin = 20;
+  if (!gamePaused) {
+    obstaclePos -= 8;
+    obstacle.style.left = `${obstaclePos}px`;
+  }
 
-  // Check if the cursor is within the playing area with the margin
+  if (obstacle.getBoundingClientRect().right <= 30) {
+    obstacle.remove();
+    obstaclesArray = obstaclesArray.filter((item) => item !== obstacle);
+    score++;
+    document.getElementById("score").innerText = `SCORE: ${score}`;
+  } else {
+    requestAnimationFrame(() => moveObstacle(obstacle, obstaclePos));
+  }
+};
+
+const checkCollision = () => {
+  const circlePosition = checkPosition(spaceShip);
+  obstaclesArray.forEach((el) => {
+    if (
+      circlePosition.left >= checkPosition(el).left - 20 &&
+      circlePosition.left <= checkPosition(el).left + 20 &&
+      circlePosition.right >= checkPosition(el).right - 20 &&
+      circlePosition.right <= checkPosition(el).right + 20
+    ) {
+      gameOver = true;
+      document.body.innerHTML = `<div id='score' class='score'>SCORE: 
+      ${score}</div><div class="game-over">GAME OVER<div id="restart" class="restart">RESTART</div></div>`;
+      obstaclesArray = [];
+      const restartButton = document.getElementById("restart");
+      restartButton.addEventListener("click", restartGame);
+    }
+  });
+};
+
+document.addEventListener("mousemove", (event) => {
+  const x = event.clientX;
+  const y = event.clientY;
+  const margin = 20;
+
   if (
     x > margin &&
     y > margin &&
     x < window.innerWidth - margin &&
     y < window.innerHeight - margin
   ) {
-    if (gamePaused) {
-      gamePaused = false;
-      start = setInterval(createObstacle, 40);
-    }
+    gamePaused = false;
     spaceShip.style.transform = `translate(${x}px, ${y}px)`;
   } else {
-    if (!gamePaused) {
-      gamePaused = true;
-      clearInterval(start);
-    }
+    gamePaused = true;
+    document.body.style.cursor = "default"; // Show the cursor
   }
-}
+});
 
-const checkCollision = () => {
-  if (!gamePaused) {
-    let circlePosition = checkPosition(spaceShip);
-    obstaclesArray.forEach((el) => {
-      if (
-        circlePosition.left >= checkPosition(el).left - 20 &&
-        circlePosition.left <= checkPosition(el).left + 20 &&
-        circlePosition.right >= checkPosition(el).right - 20 &&
-        circlePosition.right <= checkPosition(el).right + 20
-      ) {
-        document.body.innerHTML = `<div id='score' class='score'>SCORE: 
-      ${score}</div><div class="game-over">GAME OVER<div id="restart" class="restart">RESTART</div></div>`;
-
-        clearInterval(start);
-        gameOver = true;
-        obstaclesArray = [];
-        document.getElementById("restart").addEventListener("click", () => {
-          restartGame();
-          document.body.requestFullscreen();
-        });
-      }
-    });
-  }
+const runCollisionCheck = () => {
+  checkCollision();
+  requestAnimationFrame(runCollisionCheck);
 };
 
-document.addEventListener("mousemove", moveWithMouse);
-
-function runOnEachFrame() {
-  checkCollision();
-  requestAnimationFrame(runOnEachFrame);
-}
-
-runOnEachFrame();
+runCollisionCheck();
 
 function checkPosition(elem) {
   return {
@@ -121,3 +103,5 @@ function checkPosition(elem) {
     right: Math.round(elem.getBoundingClientRect().top + 15),
   };
 }
+
+setInterval(createObstacle, 100);
