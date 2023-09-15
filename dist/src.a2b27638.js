@@ -117,16 +117,17 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/index.js":[function(require,module,exports) {
-var score = 0;
-var gameOver = false;
-var gamePaused = false;
-var spaceShip = document.getElementById("spaceShip");
-var obstaclesArray = [];
-var restartGame = function restartGame() {
-  score = 0;
+})({"src/utils/functions.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.restartGame = void 0;
+var restartGame = function restartGame(state) {
+  state.score = 0;
   document.body.innerHTML = "<div id='score' class='score'>SCORE: 0</div><div id='spaceShip' class='spaceShip' />";
-  start = setInterval(createObstacle, 40);
+  state.start = setInterval(createObstacle, 40);
   spaceShip = document.getElementById("spaceShip");
 
   // Get the center coordinates of the screen
@@ -137,19 +138,32 @@ var restartGame = function restartGame() {
   spaceShip.style.transform = "translate(".concat(centerX, "px, ").concat(centerY, "px)");
   moveWithKeyboard(spaceShip, 30);
 };
+exports.restartGame = restartGame;
+},{}],"src/index.js":[function(require,module,exports) {
+"use strict";
+
+var _functions = require("./utils/functions");
+var state = {
+  start: null,
+  score: 0,
+  gameOver: false,
+  gamePaused: false
+};
+var spaceShip = document.getElementById("spaceShip");
+var obstaclesArray = [];
 var createObstacle = function createObstacle() {
-  if (!gamePaused) {
+  if (!state.gamePaused) {
     var obstacle = document.createElement("div");
     obstacle.classList.add("obstacle");
     obstacle.style["margin-top"] = "".concat(Math.random() * window.innerHeight, "px");
     obstacle.style.left = window.innerWidth + "px";
     document.body.appendChild(obstacle);
     obstaclesArray.push(obstacle);
-    score += 1;
-    document.getElementById("score").innerText = "SCORE: ".concat(score);
+    state.score += 1;
+    document.getElementById("score").innerText = "SCORE: ".concat(state.score);
     var obstaclePos = window.innerWidth;
     var moveObstacle = function moveObstacle() {
-      if (!gamePaused) {
+      if (!state.gamePaused) {
         obstaclePos -= 8;
         obstacle.style.transform = "translateX(".concat(obstaclePos, "px)");
         if (obstacle.getBoundingClientRect().left <= 0) {
@@ -163,7 +177,6 @@ var createObstacle = function createObstacle() {
     requestAnimationFrame(moveObstacle);
   }
 };
-var start = setInterval(createObstacle, 40);
 function moveWithMouse(event) {
   var x = event.clientX;
   var y = event.clientY;
@@ -171,27 +184,27 @@ function moveWithMouse(event) {
 
   // Check if the cursor is within the playing area with the margin
   if (x > margin && y > margin && x < window.innerWidth - margin && y < window.innerHeight - margin) {
-    if (gamePaused) {
-      gamePaused = false;
+    if (state.gamePaused) {
+      state.gamePaused = false;
       start = setInterval(createObstacle, 40);
     }
     spaceShip.style.transform = "translate(".concat(x, "px, ").concat(y, "px)");
   } else {
-    if (!gamePaused) {
-      gamePaused = true;
+    if (!state.gamePaused) {
+      state.gamePaused = true;
       clearInterval(start);
     }
   }
 }
 var checkCollision = function checkCollision() {
-  if (!gamePaused) {
+  if (!state.gamePaused) {
     var circlePosition = checkPosition(spaceShip);
     obstaclesArray.forEach(function (el) {
       if (circlePosition.left >= checkPosition(el).left - 20 && circlePosition.left <= checkPosition(el).left + 20 && circlePosition.right >= checkPosition(el).right - 20 && circlePosition.right <= checkPosition(el).right + 20) {
-        document.body.innerHTML = "<div id='score' class='score'>SCORE: \n      ".concat(score, "</div><div class=\"game-over\">GAME OVER<div id=\"restart\" class=\"restart\">RESTART</div></div>");
+        document.body.innerHTML = "<div id='score' class='score'>SCORE: \n      ".concat(state.score, "</div><div class=\"game-over\">GAME OVER<div id=\"restart\" class=\"restart\">RESTART</div></div>");
         clearInterval(start);
         document.getElementById("restart").addEventListener("click", function () {
-          restartGame();
+          (0, _functions.restartGame)(state);
           document.body.requestFullscreen();
         });
       }
@@ -207,7 +220,7 @@ function checkPosition(elem) {
     right: Math.round(elem.getBoundingClientRect().top + 15)
   };
 }
-},{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./utils/functions":"src/utils/functions.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -232,7 +245,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37429" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43257" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

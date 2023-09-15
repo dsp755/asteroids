@@ -1,26 +1,17 @@
-var score = 0;
-let gameOver = false;
-let gamePaused = false;
-let spaceShip = document.getElementById("spaceShip");
-const obstaclesArray = [];
-const restartGame = () => {
-  score = 0;
-  document.body.innerHTML =
-    "<div id='score' class='score'>SCORE: 0</div><div id='spaceShip' class='spaceShip' />";
-  start = setInterval(createObstacle, 40);
-  spaceShip = document.getElementById("spaceShip");
+import { restartGame } from "./utils/functions";
 
-  // Get the center coordinates of the screen
-  const centerX = window.innerWidth / 2;
-  const centerY = window.innerHeight / 2;
-
-  // Set the spaceShip's transform property to center it on the screen
-  spaceShip.style.transform = `translate(${centerX}px, ${centerY}px)`;
-  moveWithKeyboard(spaceShip, 30);
+const state = {
+  start: null,
+  score: 0,
+  gameOver: false,
+  gamePaused: false,
 };
 
+let spaceShip = document.getElementById("spaceShip");
+const obstaclesArray = [];
+
 const createObstacle = () => {
-  if (!gamePaused) {
+  if (!state.gamePaused) {
     const obstacle = document.createElement("div");
     obstacle.classList.add("obstacle");
     obstacle.style["margin-top"] = `${Math.random() * window.innerHeight}px`;
@@ -28,13 +19,13 @@ const createObstacle = () => {
     document.body.appendChild(obstacle);
     obstaclesArray.push(obstacle);
 
-    score += 1;
-    document.getElementById("score").innerText = `SCORE: ${score}`;
+    state.score += 1;
+    document.getElementById("score").innerText = `SCORE: ${state.score}`;
 
     let obstaclePos = window.innerWidth;
 
     const moveObstacle = () => {
-      if (!gamePaused) {
+      if (!state.gamePaused) {
         obstaclePos -= 8;
         obstacle.style.transform = `translateX(${obstaclePos}px)`;
 
@@ -51,8 +42,6 @@ const createObstacle = () => {
   }
 };
 
-let start = setInterval(createObstacle, 40);
-
 function moveWithMouse(event) {
   var x = event.clientX;
   var y = event.clientY;
@@ -65,21 +54,21 @@ function moveWithMouse(event) {
     x < window.innerWidth - margin &&
     y < window.innerHeight - margin
   ) {
-    if (gamePaused) {
-      gamePaused = false;
+    if (state.gamePaused) {
+      state.gamePaused = false;
       start = setInterval(createObstacle, 40);
     }
     spaceShip.style.transform = `translate(${x}px, ${y}px)`;
   } else {
-    if (!gamePaused) {
-      gamePaused = true;
+    if (!state.gamePaused) {
+      state.gamePaused = true;
       clearInterval(start);
     }
   }
 }
 
 const checkCollision = () => {
-  if (!gamePaused) {
+  if (!state.gamePaused) {
     let circlePosition = checkPosition(spaceShip);
     obstaclesArray.forEach((el) => {
       if (
@@ -89,11 +78,11 @@ const checkCollision = () => {
         circlePosition.right <= checkPosition(el).right + 20
       ) {
         document.body.innerHTML = `<div id='score' class='score'>SCORE: 
-      ${score}</div><div class="game-over">GAME OVER<div id="restart" class="restart">RESTART</div></div>`;
+      ${state.score}</div><div class="game-over">GAME OVER<div id="restart" class="restart">RESTART</div></div>`;
 
         clearInterval(start);
         document.getElementById("restart").addEventListener("click", () => {
-          restartGame();
+          restartGame(state);
           document.body.requestFullscreen();
         });
       }
