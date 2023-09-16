@@ -3,7 +3,6 @@ let gameOver = false;
 let gamePaused = false;
 let spaceShip = document.getElementById("spaceShip");
 let obstaclesArray = [];
-document.body.style.cursor = "none"; // Hide the cursor
 
 const restartGame = () => {
   gameOver = false;
@@ -86,7 +85,6 @@ document.addEventListener("mousemove", (event) => {
     spaceShip.style.transform = `translate(${x}px, ${y}px)`;
   } else {
     gamePaused = true;
-    document.body.style.cursor = "default"; // Show the cursor
   }
 });
 

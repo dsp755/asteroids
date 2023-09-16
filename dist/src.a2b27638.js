@@ -123,8 +123,6 @@ var gameOver = false;
 var gamePaused = false;
 var spaceShip = document.getElementById("spaceShip");
 var obstaclesArray = [];
-document.body.style.cursor = "none"; // Hide the cursor
-
 var restartGame = function restartGame() {
   gameOver = false;
   gamePaused = false;
@@ -188,10 +186,8 @@ document.addEventListener("mousemove", function (event) {
     spaceShip.style.transform = "translate(".concat(x, "px, ").concat(y, "px)");
   } else {
     gamePaused = true;
-    document.body.style.cursor = "default"; // Show the cursor
   }
 });
-
 var runCollisionCheck = function runCollisionCheck() {
   checkCollision();
   requestAnimationFrame(runCollisionCheck);
