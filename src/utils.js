@@ -8,10 +8,32 @@ export const actions = {
     spaceShip.classList.add("spaceShip");
     spaceShip.id = "spaceShip";
 
-    document.body.innerHTML =
-      "<div id='score' class='score'>SCORE: 0</div><div id='spaceShip' class='spaceShip' />";
+    document.body.innerHTML = `<div id='score' class='score'>SCORE: 
+    0</div><div id='spaceShip' class='spaceShip' />`;
 
     spaceShip = document.getElementById("spaceShip");
+  },
+
+  moveSpaceShip(e) {
+    function move(event, spaceShip) {
+      const x = event.clientX;
+      const y = event.clientY;
+      const margin = 20;
+
+      if (
+        x > margin &&
+        y > margin &&
+        x < window.innerWidth - margin &&
+        y < window.innerHeight - margin
+      ) {
+        state.gamePaused = false;
+        spaceShip.style.transform = `translate(${x}px, ${y}px)`;
+      } else {
+        state.gamePaused = true;
+      }
+    }
+
+    move(e, spaceShip);
   },
 
   createObstacle() {
@@ -76,28 +98,6 @@ export const actions = {
     actions.runCollisionCheck(spaceShip);
   },
 
-  moveSpaceShip(e) {
-    function move(event, spaceShip) {
-      const x = event.clientX;
-      const y = event.clientY;
-      const margin = 20;
-
-      if (
-        x > margin &&
-        y > margin &&
-        x < window.innerWidth - margin &&
-        y < window.innerHeight - margin
-      ) {
-        state.gamePaused = false;
-        spaceShip.style.transform = `translate(${x}px, ${y}px)`;
-      } else {
-        state.gamePaused = true;
-      }
-    }
-
-    move(e, spaceShip);
-  },
-
   endGame() {
     document.body.innerHTML = `<div id='score' class='score'>SCORE: 
     ${state.score}</div><div class="game-over">GAME OVER<div id="restart" class="restart">RESTART</div></div>`;
@@ -135,6 +135,9 @@ export const actions = {
 
   runCollisionCheck(spaceShip) {
     actions.checkCollision(spaceShip);
-    requestAnimationFrame(() => actions.runCollisionCheck(spaceShip));
+
+    if (!state.gameOver) {
+      requestAnimationFrame(() => actions.runCollisionCheck(spaceShip));
+    }
   },
 };
