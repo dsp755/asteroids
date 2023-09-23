@@ -3,7 +3,8 @@ import { actions } from "./utils.js";
 let spaceShip = document.getElementById("spaceShip");
 
 document.addEventListener("mousemove", actions.moveSpaceShip);
+document.addEventListener("keypress", actions.shoot);
 
-actions.runCollisionCheck(spaceShip);
+actions.checkSpaceshipCollision(spaceShip);
 
-setInterval(actions.createObstacle, 100);
+setInterval(actions.createObstacle, 80);

@@ -62,7 +62,6 @@ export const actions = {
     if (obstacle.getBoundingClientRect().right <= 30) {
       obstacle.remove();
       state.obstacles = state.obstacles.filter((item) => item !== obstacle);
-      state.score++;
       document.getElementById("score").innerText = `SCORE: ${state.score}`;
     } else {
       requestAnimationFrame(() => actions.moveObstacle(obstacle, obstaclePos));
@@ -95,7 +94,7 @@ export const actions = {
 
     document.addEventListener("mousemove", actions.moveSpaceShip);
 
-    actions.runCollisionCheck(spaceShip);
+    actions.checkSpaceshipCollision(spaceShip);
   },
 
   endGame() {
@@ -133,11 +132,75 @@ export const actions = {
     });
   },
 
-  runCollisionCheck(spaceShip) {
-    actions.checkCollision(spaceShip);
+  checkSpaceshipCollision(object) {
+    actions.checkCollision(object || spaceShip);
 
     if (!state.gameOver) {
-      requestAnimationFrame(() => actions.runCollisionCheck(spaceShip));
+      requestAnimationFrame(() =>
+        actions.checkSpaceshipCollision(object || spaceShip)
+      );
+    }
+  },
+
+  checkBulletCollision(bullet) {
+    const bulletPos = bullet.getBoundingClientRect();
+
+    state.obstacles.forEach((el) => {
+      const obstaclePos = el.getBoundingClientRect();
+
+      if (
+        bulletPos.right >= obstaclePos.left &&
+        bulletPos.right <= obstaclePos.right &&
+        bulletPos.top >= obstaclePos.top &&
+        bulletPos.top <= obstaclePos.bottom
+      ) {
+        bullet.remove();
+        el.remove();
+
+        state.score++;
+
+        state.obstacles = state.obstacles.filter((item) => item !== el);
+      }
+    });
+
+    if (!state.gameOver && bulletPos.right) {
+      requestAnimationFrame(() => {
+        actions.checkBulletCollision(bullet);
+        actions.moveBullet(bullet, bulletPos.right);
+      });
+    }
+  },
+
+  shoot() {
+    if (!state.gamePaused && !state.gameOver) {
+      const circlePosition = actions.checkPosition(spaceShip);
+
+      const bullet = actions.addBullet();
+
+      bullet.style.left = `${circlePosition.left + 10}px`;
+      bullet.style.top = `${circlePosition.right - 10}px`;
+
+      document.body.appendChild(bullet);
+      actions.checkBulletCollision(bullet);
+    }
+  },
+
+  addBullet() {
+    if (!state.gamePaused && !state.gameOver) {
+      const bullet = document.createElement("div");
+      bullet.classList.add("bullet");
+      bullet.setAttribute("id", "bullet");
+
+      return bullet;
+    }
+  },
+
+  moveBullet(bullet, bulletPosition) {
+    bulletPosition += 10;
+    bullet.style.left = `${bulletPosition}px`;
+
+    if (bulletPosition > window.innerWidth - 30) {
+      bullet.remove();
     }
   },
 };

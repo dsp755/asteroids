@@ -23,6 +23,13 @@ body {
   transition: all 1s ease-out;
 }
 
+.bullet {
+  position: absolute;
+  background-color: white;
+  height: 6px;
+  width: 12px;
+}
+
 .game-over {
   display: flex;
   flex-direction: column;
