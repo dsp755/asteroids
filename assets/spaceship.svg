@@ -1,0 +1,6 @@
+<svg width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="25" height="25" fill="transparent" />
+    <!-- Spaceship Body -->
+    <polygon points="5,0 12.5,5 20,0 17.5,10 25,17.5 7.5,25 0,17.5 7.5,10" fill="#FFFF00" />
+</svg>
