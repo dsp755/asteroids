@@ -20,6 +20,11 @@ body {
   background: #d6392b;
   width: 30px;
   height: 30px;
+  transition: all 0.5s ease-out;
+}
+
+.obstacle.destroyed {
+  opacity: 0;
   transition: all 1s ease-out;
 }
 

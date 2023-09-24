@@ -154,8 +154,11 @@ export const actions = {
         bulletPos.top >= obstaclePos.top &&
         bulletPos.top <= obstaclePos.bottom
       ) {
-        bullet.remove();
-        el.remove();
+        bullet.classList.add("destroyed");
+        setTimeout(() => bullet.remove(), 200);
+
+        el.classList.add("destroyed");
+        setTimeout(() => el.remove(), 1000);
 
         state.score++;
 
