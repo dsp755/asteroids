@@ -8,8 +8,9 @@ export const actions = {
     spaceShip.classList.add("spaceShip");
     spaceShip.id = "spaceShip";
 
-    document.body.innerHTML = `<div id='score' class='score'>SCORE: 
-    0</div><div id='spaceShip' class='spaceShip' />`;
+    document.body.innerHTML = `
+    <div id='score' class='score'>SCORE: 0</div>  
+    <div id='spaceShip' class='spaceShip' />`;
 
     spaceShip = document.getElementById("spaceShip");
   },
@@ -99,13 +100,15 @@ export const actions = {
 
   endGame() {
     document.body.innerHTML = `
-    <div id='score' class='score'>
-      SCORE: ${state.score}
-    </div>
-    <div class="game-over">
-      GAME OVER
-      <div id="restart" class="restart">
-        RESTART
+    <div class="gameOverScreen">
+      <div id='score' class='score'>
+        SCORE: ${state.score}
+      </div>
+      <div class="game-over">
+        GAME OVER
+        <div id="restart" class="restart">
+          RESTART
+        </div>
       </div>
     </div>`;
 
