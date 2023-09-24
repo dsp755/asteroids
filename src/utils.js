@@ -98,8 +98,16 @@ export const actions = {
   },
 
   endGame() {
-    document.body.innerHTML = `<div id='score' class='score'>SCORE: 
-    ${state.score}</div><div class="game-over">GAME OVER<div id="restart" class="restart">RESTART</div></div>`;
+    document.body.innerHTML = `
+    <div id='score' class='score'>
+      SCORE: ${state.score}
+    </div>
+    <div class="game-over">
+      GAME OVER
+      <div id="restart" class="restart">
+        RESTART
+      </div>
+    </div>`;
 
     document.removeEventListener("mousemove", actions.moveSpaceShip);
 
@@ -126,8 +134,14 @@ export const actions = {
         circlePosition.right >= actions.checkPosition(el).right - 20 &&
         circlePosition.right <= actions.checkPosition(el).right + 20
       ) {
-        state.gameOver = true;
-        actions.endGame();
+        spaceShip.classList.add("destroyed");
+        el.classList.add("destroyed");
+
+        setTimeout(() => {
+          spaceShip.remove();
+          state.gameOver = true;
+          actions.endGame();
+        }, 1000);
       }
     });
   },
