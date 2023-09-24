@@ -63,7 +63,7 @@ export const actions = {
       obstacle.remove();
       state.obstacles = state.obstacles.filter((item) => item !== obstacle);
       document.getElementById("score").innerText = `SCORE: ${state.score}`;
-    } else {
+    } else if (obstacle.getBoundingClientRect().top) {
       requestAnimationFrame(() => actions.moveObstacle(obstacle, obstaclePos));
     }
   },
@@ -178,7 +178,7 @@ export const actions = {
       const bullet = actions.addBullet();
 
       bullet.style.left = `${circlePosition.left + 10}px`;
-      bullet.style.top = `${circlePosition.right - 10}px`;
+      bullet.style.top = `${circlePosition.right - 2}px`;
 
       document.body.appendChild(bullet);
       actions.checkBulletCollision(bullet);
