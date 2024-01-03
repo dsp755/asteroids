@@ -1,5 +1,10 @@
 import { state } from "./store.js";
 
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") e.preventDefault();
+  actions.shoot();
+});
+
 let spaceShip = document.getElementById("spaceShip");
 
 export const actions = {
